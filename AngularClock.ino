@@ -44,7 +44,7 @@ Encoder myEnc(ENCA,ENCB);
 #define MIN_ANALOG 0
 #define MAX_ANALOG 255
 
-#define HOUR_SCALE 12 //12 or 24
+#define HOUR_SCALE 24 //12 or 24
 
 // LED Pins
 #define RED 11
@@ -307,7 +307,7 @@ void loop () {
 	 //24h clock: don't drop 12 hours in the afternoon, and double the map scale
      if(temp_hours >  11 && HOUR_SCALE==12)
        temp_hours = temp_hours - 12;
-     setMeter(HOURS,map(temp_hours*60+(tm.Minute/2),0,720*(HOUR_SCALE/2),0,255)+getOffset(HOURS,temp_hours));
+     setMeter(HOURS,map(temp_hours*60+(tm.Minute/2),0,60*HOUR_SCALE,0,255)+getOffset(HOURS,temp_hours));
 
 
     //Serial.println(F("--- End of Meter update loop"));
