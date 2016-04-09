@@ -44,6 +44,7 @@ Encoder myEnc(ENCA,ENCB);
 #define MIN_ANALOG 0
 #define MAX_ANALOG 255
 
+#define HOUR_SCALE 12 //12 or 24
 
 // LED Pins
 #define RED 11
@@ -122,6 +123,7 @@ void adjustMeter(char *msg1, char *msg2, int meter, int mpos) {
   
   // convert time units to meter position 0-255
   if(meter == HOURS)
+	  //If this is a 24h clock, we'll map to values 1-11 internally but use with 2-22 for display
       basePosition = map(mpos*60,0,720,0,255);
   else if (meter == MINUTES)
       basePosition = map(mpos,0,59,0,255);
@@ -133,7 +135,7 @@ void adjustMeter(char *msg1, char *msg2, int meter, int mpos) {
   Serial.print(F("Adjust "));
   Serial.print(msg1);
   Serial.print(F(" meter to "));
-  Serial.print(mpos);
+  Serial.print((HOUR_SCALE==24 && meter==HOURS ? mpos*2 : mpos)); //24h malarkey
   Serial.print(F(" "));
   Serial.print(msg2);
   Serial.println(F(" position using knob on rear of clock"));
@@ -157,7 +159,7 @@ void adjustMeter(char *msg1, char *msg2, int meter, int mpos) {
   //Update offset storage
   setOffset(meter,mpos,(newPos-start));
   Serial.print(F("Offset for "));
-  Serial.print(mpos);
+  Serial.print((HOUR_SCALE==24 && meter==HOURS ? mpos*2 : mpos)); //24h malarkey
   Serial.print(F(" "));
   Serial.print(msg2);
   Serial.print(F(" is "));
@@ -302,9 +304,10 @@ void loop () {
   
      int temp_hours;
      temp_hours =  tm.Hour;
-     if(temp_hours >  11)
+	 //24h clock: don't drop 12 hours in the afternoon, and double the map scale
+     if(temp_hours >  11 && HOUR_SCALE==12)
        temp_hours = temp_hours - 12;
-     setMeter(HOURS,map(temp_hours*60+(tm.Minute/2),0,720,0,255)+getOffset(HOURS,temp_hours));
+     setMeter(HOURS,map(temp_hours*60+(tm.Minute/2),0,720*(HOUR_SCALE/2),0,255)+getOffset(HOURS,temp_hours));
 
 
     //Serial.println(F("--- End of Meter update loop"));
@@ -414,6 +417,8 @@ char getOffset(int meter, int pos){
   int retValue;
   
   if(meter == HOURS){
+	  //for 24h clock, use offset that's half the value of the current hour, rounded down (int)
+	  if(HOUR_SCALE==24) pos = pos/2;
       retValue = EEPROM.read(METER_OFFSETS+pos);
   }
   else{ // meter == MINUTES
