@@ -74,7 +74,7 @@ const int* getCalPts(int meterID){ //TODO: set this up programmatically either C
 #define SECONDS_1 1000 //ms
 #define FLASH_DELAY 200 //ms
 
-#define LED_STARTUP_FLASHES 10
+#define LED_STARTUP_FLASHES 1
 
 int meterCtrlVal[TOTAL_METERS] = {0,}; //Holds the current control value of each meter
 
