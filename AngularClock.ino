@@ -15,7 +15,7 @@
  ****************************************************/
 #define VERSION "V1.0"
 
-#include <Time.h>
+#include <TimeLib.h>
 #include <Wire.h>
 #include <EEPROM.h>
 #include <Encoder.h>
@@ -54,10 +54,10 @@ Encoder myEnc(ENCA,ENCB);
 //Last value should be the meter's highest integer value. This helps in case deflection at CV 255 doesn't reach the end of the scale.
 //The lowest (if nonzero) and highest calibration points also define the meter's range until calibrated.
 //Make sure the memory locations (see CALMEMLOC_) account for the number of calibration points defined here.
-const int CALPTS = 5; //http://forum.arduino.cc/index.php?topic=41009.0
-const int CALPTS_HOURS[CALPTS] = {1,6,12,18,23};
-const int CALPTS_MINUTES[CALPTS] = {2,15,30,45,59};
-const int CALPTS_SECONDS[CALPTS] = {2,20,40,58,59}; //this meter's bad at the top, so concentrate the calpts there
+const int CALPTS = 7; //http://forum.arduino.cc/index.php?topic=41009.0
+const int CALPTS_HOURS[CALPTS] = {1,5,10,15,20,22,23};
+const int CALPTS_MINUTES[CALPTS] = {1,5,15,35,57,58,59};
+const int CALPTS_SECONDS[CALPTS] = {1,5,15,35,57,58,59};
 const int* getCalPts(int meterID){ //TODO: set this up programmatically either CALPTS[meterID] or what
 	switch(meterID){
 		case HOURS: return CALPTS_HOURS; break;
@@ -387,9 +387,9 @@ void setMeter(int meter, int value){
   Offsets are used for beter needle postioning on Hour and Minute clock faces
 */
 // Memory locations for meter calibration. They hold control values that correspond to the meter values in the CALPTS_ arrays.
-const int CALMEMLOC_HOURS = 30; //thru 34
-const int CALMEMLOC_MINUTES = 35; //thru 39
-const int CALMEMLOC_SECONDS = 40; //thru 44
+const int CALMEMLOC_HOURS = 30; //thru 36
+const int CALMEMLOC_MINUTES = 37; //thru 43
+const int CALMEMLOC_SECONDS = 44; //thru 50
 const int getCalMemLoc(int meterID){ //TODO: set this up programmatically either CALMEMLOC[meterID] or what
 	switch(meterID){
 		case HOURS: return CALMEMLOC_HOURS; break;
